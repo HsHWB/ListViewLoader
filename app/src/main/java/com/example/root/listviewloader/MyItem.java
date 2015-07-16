@@ -7,7 +7,7 @@ import android.widget.ImageView;
  */
 public class MyItem {
 
-    public String url;
+    public String iconUrl;
     public String title;
     public String context;
 
@@ -16,11 +16,11 @@ public class MyItem {
     }
 
     public String getUrl() {
-        return url;
+        return iconUrl;
     }
 
     public void setUrl(String url) {
-        this.url = url;
+        this.iconUrl = url;
     }
 
     public String getTitle() {
