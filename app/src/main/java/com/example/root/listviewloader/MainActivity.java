@@ -1,12 +1,19 @@
 package com.example.root.listviewloader;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,14 +39,31 @@ public class MainActivity extends Activity {
         new MyAsyncTask().execute(URL);
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     private List<MyItem> getJsonDate(String url) {
 
         List<MyItem> myItems = new ArrayList<>();
         try {
-            System.out.println("getJsonDate begin");
             String jsonString = readStream(new URL(url).openStream());
-            System.out.println("jsonString == "+jsonString);
+            JSONObject allData = new JSONObject(jsonString);
+            if (allData.getString("status").equals("1")){
+                JSONArray allArray = allData.getJSONArray("data");
+                MyItem myItem;
+                JSONObject jsonItem;
+                for ( int i = 0; i < allArray.length(); i++){
+                    myItem = new MyItem();
+                    jsonItem = allArray.getJSONObject(i);
+                    myItem.setTitle(jsonItem.getString("name"));
+                    myItem.setContext(jsonItem.getString("description"));
+                    myItem.setUrl(jsonItem.getString("picSmall"));
+                    myItems.add(myItem);
+                }
+            }else{
+                Toast.makeText(this, "URL error", Toast.LENGTH_SHORT).show();
+            }
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
@@ -51,7 +75,6 @@ public class MainActivity extends Activity {
 
         InputStreamReader inputStreamReader;
         String result = "";
-        System.out.println("readStream begin");
         try {
             String line = "";
             inputStreamReader = new InputStreamReader(inputStream, "utf-8");
@@ -77,8 +100,14 @@ public class MainActivity extends Activity {
         protected List<MyItem> doInBackground(String... params) {
 
             String url = params[0];
-            System.out.println("url == "+url);
             return getJsonDate(url);
+        }
+
+        @Override
+        protected void onPostExecute(List<MyItem> myItems) {
+            super.onPostExecute(myItems);
+            MyAdapater myAdapater = new MyAdapater(MainActivity.this, myItems);
+            mListView.setAdapter(myAdapater);
         }
     }
 
