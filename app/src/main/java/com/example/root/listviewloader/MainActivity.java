@@ -36,8 +36,9 @@ public class MainActivity extends Activity {
 
         List<MyItem> myItems = new ArrayList<>();
         try {
+            System.out.println("getJsonDate begin");
             String jsonString = readStream(new URL(url).openStream());
-            Log.d("test", jsonString);
+            System.out.println("jsonString == "+jsonString);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -50,12 +51,13 @@ public class MainActivity extends Activity {
 
         InputStreamReader inputStreamReader;
         String result = "";
+        System.out.println("readStream begin");
         try {
             String line = "";
             inputStreamReader = new InputStreamReader(inputStream, "utf-8");
             BufferedReader br = new BufferedReader(inputStreamReader);
             while ( (line = br.readLine()) != null ){
-                result +=line;
+                result += line;
             }
 
         } catch (UnsupportedEncodingException e) {
@@ -63,7 +65,7 @@ public class MainActivity extends Activity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return result;
     }
 
     /**
@@ -75,6 +77,7 @@ public class MainActivity extends Activity {
         protected List<MyItem> doInBackground(String... params) {
 
             String url = params[0];
+            System.out.println("url == "+url);
             return getJsonDate(url);
         }
     }
