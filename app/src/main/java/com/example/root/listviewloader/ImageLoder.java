@@ -2,6 +2,7 @@ package com.example.root.listviewloader;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.widget.ImageView;
@@ -44,6 +45,28 @@ public class ImageLoder {
             }
         }.start();
 
+    }
+
+    public void showImageByAsyncTask(ImageView imageView, String url){
+        new NewsAsyncTask(imageView).execute(url);
+    }
+
+    private class NewsAsyncTask extends AsyncTask<String, Void, Bitmap>{
+
+        public NewsAsyncTask(ImageView imageView){
+            mImageView = imageView;
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            return getBitmap(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+            mImageView.setImageBitmap(bitmap);
+        }
     }
 
     public Bitmap getBitmap(String url){
