@@ -58,6 +58,8 @@ public class MyAdapater extends BaseAdapter implements AbsListView.OnScrollListe
         viewHolder.ivIcon.setImageResource(R.mipmap.ic_launcher);
 //        new ImageLoder().showImageByThread(viewHolder.ivIcon,
 //                mList.get(position).iconUrl);
+        String url = mList.get(position).iconUrl;
+        viewHolder.ivIcon.setTag(url);
         new ImageLoder().showImageByAsyncTask(viewHolder.ivIcon, mList.get(position).iconUrl);
         viewHolder.tvTitle.setText(mList.get(position).title);
         viewHolder.tvContent.setText(mList.get(position).context);

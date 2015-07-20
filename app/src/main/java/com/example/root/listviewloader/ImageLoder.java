@@ -48,13 +48,17 @@ public class ImageLoder {
     }
 
     public void showImageByAsyncTask(ImageView imageView, String url){
-        new NewsAsyncTask(imageView).execute(url);
+        new NewsAsyncTask(imageView, url).execute(url);
     }
 
     private class NewsAsyncTask extends AsyncTask<String, Void, Bitmap>{
 
-        public NewsAsyncTask(ImageView imageView){
+        private ImageView mImageView;
+        private String mUrl;
+
+        public NewsAsyncTask(ImageView imageView, String url){
             mImageView = imageView;
+            mUrl = url;
         }
 
         @Override
@@ -65,7 +69,9 @@ public class ImageLoder {
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             super.onPostExecute(bitmap);
-            mImageView.setImageBitmap(bitmap);
+            if (mImageView.getTag().equals(mUrl)) {
+                mImageView.setImageBitmap(bitmap);
+            }
         }
     }
 
