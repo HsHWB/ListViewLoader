@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
+import android.util.LruCache;
 import android.widget.ImageView;
 
 import java.io.BufferedInputStream;
@@ -20,6 +21,23 @@ import java.net.URL;
 public class ImageLoder {
 
     private ImageView mImageView;
+    private String mUrl;
+    private LruCache<String, Bitmap> mCaches;
+
+    public ImageLoder(){
+
+        int maxMemory = (int) Runtime.getRuntime().maxMemory();
+        int cacheSize = maxMemory / 4;
+        mCaches = new LruCache<String, Bitmap>(cacheSize){
+            @Override
+            protected int sizeOf(String key, Bitmap value) {
+                return value.getByteCount();
+            }
+        };
+
+    }
+
+
     private Handler mHandler = new Handler() {
 
         @Override
@@ -48,7 +66,24 @@ public class ImageLoder {
     }
 
     public void showImageByAsyncTask(ImageView imageView, String url){
+        Bitmap bitmap = getBitmapFromCache(url);
+        if (bitmap == null){
+            new NewsAsyncTask(imageView, url).execute(url);
+
+        }else{
+            imageView.setImageBitmap(bitmap);
+        }
         new NewsAsyncTask(imageView, url).execute(url);
+    }
+
+    public void addBitmapToCache(String url, Bitmap bitmap){
+        if (getBitmapFromCache(url) == null){
+            mCaches.put(url, bitmap);
+        }
+    }
+
+    public Bitmap getBitmapFromCache(String url){
+        return mCaches.get(url);
     }
 
     private class NewsAsyncTask extends AsyncTask<String, Void, Bitmap>{
@@ -63,7 +98,12 @@ public class ImageLoder {
 
         @Override
         protected Bitmap doInBackground(String... params) {
-            return getBitmap(params[0]);
+            String url = params[0];
+            Bitmap bitmap = getBitmap(url);
+            if (bitmap != null){
+                addBitmapToCache(url, bitmap);
+            }
+            return bitmap;
         }
 
         @Override

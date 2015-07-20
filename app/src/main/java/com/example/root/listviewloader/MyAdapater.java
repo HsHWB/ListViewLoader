@@ -18,12 +18,13 @@ public class MyAdapater extends BaseAdapter implements AbsListView.OnScrollListe
 
     private List<MyItem> mList;
     private LayoutInflater mInflater;
+    private ImageLoder mImageLoder;
 
     public MyAdapater(Context context, List<MyItem> data){
 
         mList = data;
         mInflater = LayoutInflater.from(context);
-
+        mImageLoder = new ImageLoder();
     }
 
     @Override
@@ -60,7 +61,8 @@ public class MyAdapater extends BaseAdapter implements AbsListView.OnScrollListe
 //                mList.get(position).iconUrl);
         String url = mList.get(position).iconUrl;
         viewHolder.ivIcon.setTag(url);
-        new ImageLoder().showImageByAsyncTask(viewHolder.ivIcon, mList.get(position).iconUrl);
+//        new ImageLoder().showImageByAsyncTask(viewHolder.ivIcon, mList.get(position).iconUrl);
+        mImageLoder.showImageByAsyncTask(viewHolder.ivIcon, mList.get(position).iconUrl);
         viewHolder.tvTitle.setText(mList.get(position).title);
         viewHolder.tvContent.setText(mList.get(position).context);
 
