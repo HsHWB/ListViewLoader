@@ -106,7 +106,7 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(List<MyItem> myItems) {
             super.onPostExecute(myItems);
-            MyAdapater myAdapater = new MyAdapater(MainActivity.this, myItems);
+            MyAdapater myAdapater = new MyAdapater(MainActivity.this, myItems, mListView);
             mListView.setAdapter(myAdapater);
         }
     }

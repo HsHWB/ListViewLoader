@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -19,12 +20,19 @@ public class MyAdapater extends BaseAdapter implements AbsListView.OnScrollListe
     private List<MyItem> mList;
     private LayoutInflater mInflater;
     private ImageLoder mImageLoder;
+    private int mStart, mEnd;
+    public static String[] URLS;
 
-    public MyAdapater(Context context, List<MyItem> data){
+    public MyAdapater(Context context, List<MyItem> data, ListView listView){
 
         mList = data;
         mInflater = LayoutInflater.from(context);
-        mImageLoder = new ImageLoder();
+        mImageLoder = new ImageLoder(listView);
+        URLS = new String[data.size()];
+        for (int i = 0; i < data.size(); i++){
+            URLS[i] = data.get(i).getUrl();
+        }
+        listView.setOnScrollListener(this);
     }
 
     @Override
@@ -62,7 +70,8 @@ public class MyAdapater extends BaseAdapter implements AbsListView.OnScrollListe
         String url = mList.get(position).iconUrl;
         viewHolder.ivIcon.setTag(url);
 //        new ImageLoder().showImageByAsyncTask(viewHolder.ivIcon, mList.get(position).iconUrl);
-        mImageLoder.showImageByAsyncTask(viewHolder.ivIcon, mList.get(position).iconUrl);
+//        mImageLoder.showImageByAsyncTask(viewHolder.ivIcon, mList.get(position).iconUrl);
+        mImageLoder.showImageByAsyncTask(viewHolder.ivIcon, url);
         viewHolder.tvTitle.setText(mList.get(position).title);
         viewHolder.tvContent.setText(mList.get(position).context);
 
@@ -76,11 +85,16 @@ public class MyAdapater extends BaseAdapter implements AbsListView.OnScrollListe
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
-
+        if(scrollState == SCROLL_STATE_IDLE){
+            mImageLoder.loadImages(mStart, mEnd);
+        }else{
+            mImageLoder.cancelAllTask();
+        }
     }
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
+        mStart = firstVisibleItem;
+        mEnd = firstVisibleItem + visibleItemCount;
     }
 }
