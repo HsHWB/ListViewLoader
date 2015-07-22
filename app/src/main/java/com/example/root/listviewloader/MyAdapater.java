@@ -22,6 +22,7 @@ public class MyAdapater extends BaseAdapter implements AbsListView.OnScrollListe
     private ImageLoder mImageLoder;
     private int mStart, mEnd;
     public static String[] URLS;
+    private boolean mFirstIn;
 
     public MyAdapater(Context context, List<MyItem> data, ListView listView){
 
@@ -33,6 +34,7 @@ public class MyAdapater extends BaseAdapter implements AbsListView.OnScrollListe
             URLS[i] = data.get(i).getUrl();
         }
         listView.setOnScrollListener(this);
+        mFirstIn = true;
     }
 
     @Override
@@ -96,5 +98,9 @@ public class MyAdapater extends BaseAdapter implements AbsListView.OnScrollListe
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         mStart = firstVisibleItem;
         mEnd = firstVisibleItem + visibleItemCount;
+        if (mFirstIn && visibleItemCount > 0){
+            mImageLoder.loadImages(mStart, mEnd);
+            mFirstIn = false;
+        }
     }
 }
